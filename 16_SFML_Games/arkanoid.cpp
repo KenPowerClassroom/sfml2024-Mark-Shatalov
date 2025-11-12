@@ -21,13 +21,16 @@ int arkanoid()
     Sprite blockSprite[1000];
 
     int blockCount = 0;
-    for (int row=1;row<=10;row++)
-    for (int column=1; column <=10; column++)
-      {
-         blockSprite[blockCount].setTexture(blockTexture);
-         blockSprite[blockCount].setPosition(row*43,column*20);
-         blockCount++;
-      }
+    for (int row = 1; row <= 10; row++)
+    {
+        for (int column = 1; column <= 10; column++)
+        {
+            blockSprite[blockCount].setTexture(blockTexture);
+            blockSprite[blockCount].setPosition(row * 43, column * 20);
+            blockCount++;
+        }
+    }
+    
 
     float ballVelocityX = 6, ballVelocityY = 5;
     float ballPositionX = 300, ballPositionY = 300;
@@ -41,35 +44,62 @@ int arkanoid()
              window.close();
        }
 
-    ballPositionX += ballVelocityX;
-    for (int i = 0; i < blockCount; i++)
-        if ( FloatRect(ballPositionX+3,ballPositionY+3,6,6).intersects(blockSprite[i].getGlobalBounds()) ) 
-             {blockSprite[i].setPosition(-100,0); ballVelocityX =- ballVelocityX;}
+        ballPositionX += ballVelocityX;
+        for (int i = 0; i < blockCount; i++)
+        {
+            if (FloatRect(ballPositionX + 3, ballPositionY + 3, 6, 6).intersects(blockSprite[i].getGlobalBounds()))
+            {
+               blockSprite[i].setPosition(-100, 0); ballVelocityX = -ballVelocityX;
+            }
+        }
+        
 
-    ballPositionY += ballVelocityY;
-    for (int i = 0; i < blockCount; i++)
-        if ( FloatRect(ballPositionX+3,ballPositionY+3,6,6).intersects(blockSprite[i].getGlobalBounds()) ) 
-             {blockSprite[i].setPosition(-100,0); ballVelocityY =- ballVelocityY;}
+        ballPositionY += ballVelocityY;
+        for (int i = 0; i < blockCount; i++)
+        {
+            if (FloatRect(ballPositionX + 3, ballPositionY + 3, 6, 6).intersects(blockSprite[i].getGlobalBounds()))
+            {
+                blockSprite[i].setPosition(-100, 0); ballVelocityY = -ballVelocityY;
+            }
+        }
+       
 
-    if (ballPositionX<0 || ballPositionX>520)  ballVelocityX =- ballVelocityX;
-    if (ballPositionY<0 || ballPositionY>450)  ballVelocityY =- ballVelocityY;
+        if (ballPositionX < 0 || ballPositionX>520)
+        {
+            ballVelocityX = -ballVelocityX;
+        }
+        if (ballPositionY < 0 || ballPositionY>450)
+        {
+            ballVelocityY = -ballVelocityY;
+        }
 
-    if (Keyboard::isKeyPressed(Keyboard::Right)) paddleSprite.move(6,0);
-    if (Keyboard::isKeyPressed(Keyboard::Left)) paddleSprite.move(-6,0);
+        if (Keyboard::isKeyPressed(Keyboard::Right))
+        {
+            paddleSprite.move(6, 0);
+        }
+        if (Keyboard::isKeyPressed(Keyboard::Left))
+        {
+            paddleSprite.move(-6, 0);
+        }
 
-    if ( FloatRect(ballPositionX,ballPositionY,12,12).intersects(paddleSprite.getGlobalBounds()) ) ballVelocityY=-(rand()%5+2);
+        if (FloatRect(ballPositionX, ballPositionY, 12, 12).intersects(paddleSprite.getGlobalBounds()))
+        {
+            ballVelocityY = -(rand() % 5 + 2);
+        }
 
-    ballSprite.setPosition(ballPositionX, ballPositionY);
+        ballSprite.setPosition(ballPositionX, ballPositionY);
 
-    window.clear();
-    window.draw(backgroundSprite);
-    window.draw(ballSprite);
-    window.draw(paddleSprite);
+        window.clear();
+        window.draw(backgroundSprite);
+        window.draw(ballSprite);
+        window.draw(paddleSprite);
 
-    for (int i=0;i<blockCount;i++)
-        window.draw(blockSprite[i]);
+        for (int i=0;i<blockCount;i++)
+        {
+            window.draw(blockSprite[i]);
+        }
 
-    window.display();
+        window.display();
     }
 
   return 0;
