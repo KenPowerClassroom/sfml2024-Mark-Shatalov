@@ -6,7 +6,33 @@ int arkanoid()
 {
     srand(static_cast<unsigned>(time(0)));
 
-    RenderWindow window(VideoMode(520, 450), "Arkanoid!");
+	// window size const
+	const int WINDOW_WIDTH = 520;
+	const int WINDOW_HEIGHT = 450;
+    
+	// block grid const
+    const int BLOCK_ROWS = 10;
+    const int BLOCK_COLUMNS = 10;
+	const int BLOCK_OFFSET_X = 43;
+	const int BLOCK_OFFSET_Y = 20;
+    const int MAX_BLOCKS = 1000;
+
+    // ball const
+	const float BALL_POSITION_X = 300.0f;
+	const float BALL_POSITION_Y = 300.0f;
+	const float BALL_SIZE = 12.0f;
+    const int BALL_COLLISION_OFFSET = 3;
+    const int BALL_COLLISION_SIZE = 6;
+
+	// paddle const
+	const float PADDLE_START_POSITION_X = 300.0f;
+	const float PADDLE_START_POSITION_Y = 440.0f;
+
+	// oof-screen pos for destroyed blocks
+	const int OFFSCREEN_POS_X = -100;
+	const int OFFSCREEN_POS_Y = 0;
+
+    RenderWindow window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Arkanoid!");
     window.setFramerateLimit(60);
 
 	Texture blockTexture, backgroundTexture, ballTexture, paddleTexture;
@@ -16,24 +42,24 @@ int arkanoid()
     paddleTexture.loadFromFile("images/arkanoid/paddle.png");
 
     Sprite backgroundSprite(backgroundTexture), ballSprite(ballTexture), paddleSprite(paddleTexture);
-    paddleSprite.setPosition(300,440);
+    paddleSprite.setPosition(PADDLE_START_POSITION_X,PADDLE_START_POSITION_Y);
 
-    Sprite blockSprite[1000];
+    Sprite blockSprite[MAX_BLOCKS];
 
     int blockCount = 0;
-    for (int row = 1; row <= 10; row++)
+    for (int row = 1; row <= BLOCK_ROWS; row++)
     {
-        for (int column = 1; column <= 10; column++)
+        for (int column = 1; column <= BLOCK_COLUMNS; column++)
         {
             blockSprite[blockCount].setTexture(blockTexture);
-            blockSprite[blockCount].setPosition(row * 43, column * 20);
+            blockSprite[blockCount].setPosition(row * BLOCK_OFFSET_X, column * BLOCK_OFFSET_Y);
             blockCount++;
         }
     }
     
 
     float ballVelocityX = 6, ballVelocityY = 5;
-    float ballPositionX = 300, ballPositionY = 300;
+    float ballPositionX = BALL_POSITION_X, ballPositionY = BALL_POSITION_Y;
 
     while (window.isOpen())
     {
@@ -47,9 +73,10 @@ int arkanoid()
         ballPositionX += ballVelocityX;
         for (int i = 0; i < blockCount; i++)
         {
-            if (FloatRect(ballPositionX + 3, ballPositionY + 3, 6, 6).intersects(blockSprite[i].getGlobalBounds()))
+            if (FloatRect(ballPositionX + BALL_COLLISION_OFFSET, ballPositionY + BALL_COLLISION_OFFSET, 
+                BALL_COLLISION_SIZE, BALL_COLLISION_SIZE).intersects(blockSprite[i].getGlobalBounds()))
             {
-               blockSprite[i].setPosition(-100, 0); ballVelocityX = -ballVelocityX;
+               blockSprite[i].setPosition(OFFSCREEN_POS_X, OFFSCREEN_POS_Y); ballVelocityX = -ballVelocityX;
             }
         }
         
@@ -57,18 +84,20 @@ int arkanoid()
         ballPositionY += ballVelocityY;
         for (int i = 0; i < blockCount; i++)
         {
-            if (FloatRect(ballPositionX + 3, ballPositionY + 3, 6, 6).intersects(blockSprite[i].getGlobalBounds()))
+            if (FloatRect(ballPositionX + BALL_COLLISION_OFFSET, ballPositionY + BALL_COLLISION_OFFSET,
+                BALL_COLLISION_SIZE, BALL_COLLISION_SIZE).intersects(blockSprite[i].getGlobalBounds()))
             {
-                blockSprite[i].setPosition(-100, 0); ballVelocityY = -ballVelocityY;
+                blockSprite[i].setPosition(OFFSCREEN_POS_X, OFFSCREEN_POS_Y);
+                ballVelocityY = -ballVelocityY;
             }
         }
        
 
-        if (ballPositionX < 0 || ballPositionX>520)
+        if (ballPositionX < 0 || ballPositionX > WINDOW_WIDTH)
         {
             ballVelocityX = -ballVelocityX;
         }
-        if (ballPositionY < 0 || ballPositionY>450)
+        if (ballPositionY < 0 || ballPositionY > WINDOW_HEIGHT)
         {
             ballVelocityY = -ballVelocityY;
         }
@@ -82,7 +111,7 @@ int arkanoid()
             paddleSprite.move(-6, 0);
         }
 
-        if (FloatRect(ballPositionX, ballPositionY, 12, 12).intersects(paddleSprite.getGlobalBounds()))
+        if (FloatRect(ballPositionX, ballPositionY, BALL_SIZE, BALL_SIZE).intersects(paddleSprite.getGlobalBounds()))
         {
             ballVelocityY = -(rand() % 5 + 2);
         }
@@ -94,7 +123,7 @@ int arkanoid()
         window.draw(ballSprite);
         window.draw(paddleSprite);
 
-        for (int i=0;i<blockCount;i++)
+        for (int i = 0; i < blockCount; i++)
         {
             window.draw(blockSprite[i]);
         }
