@@ -78,21 +78,44 @@ int arkanoid()
         ballPositionX += ballVelocityX;
         for (int i = 0; i < blockCount; i++)
         {
-            if (FloatRect(ballPositionX + BALL_COLLISION_OFFSET, ballPositionY + BALL_COLLISION_OFFSET, 
-                BALL_COLLISION_SIZE, BALL_COLLISION_SIZE).intersects(blockSprite[i].getGlobalBounds()))
+            // ball collision box
+			float ballColisionX = ballPositionX + BALL_COLLISION_OFFSET;
+			float ballColisionY = ballPositionY + BALL_COLLISION_OFFSET;
+			// create collision box
+			FloatRect ballCollisionBox(ballColisionX, ballColisionY, BALL_COLLISION_SIZE, BALL_COLLISION_SIZE);
+			// get block bounds
+			FloatRect blockBounds = blockSprite[i].getGlobalBounds();
+			// check if ball intersects block
+			bool ballHitBlock = ballCollisionBox.intersects(blockBounds);
+
+            // if collision move block out of screen
+            if (ballHitBlock)
             {
-               blockSprite[i].setPosition(OFFSCREEN_POS_X, OFFSCREEN_POS_Y); ballVelocityX = -ballVelocityX;
+				blockSprite[i].setPosition(OFFSCREEN_POS_X, OFFSCREEN_POS_Y);
+				// reverse ball x velocity
+				ballVelocityX = -ballVelocityX;
             }
         }
         
-		// update ball position
+        // update ball position 
         ballPositionY += ballVelocityY;
         for (int i = 0; i < blockCount; i++)
         {
-            if (FloatRect(ballPositionX + BALL_COLLISION_OFFSET, ballPositionY + BALL_COLLISION_OFFSET,
-                BALL_COLLISION_SIZE, BALL_COLLISION_SIZE).intersects(blockSprite[i].getGlobalBounds()))
+			// ball collision box
+            float ballCollisionX = ballPositionX + BALL_COLLISION_OFFSET;
+            float ballCollisionY = ballPositionY + BALL_COLLISION_OFFSET;
+			// create collision box
+            FloatRect ballCollisionBox(ballCollisionX, ballCollisionY, BALL_COLLISION_SIZE, BALL_COLLISION_SIZE);
+			// get block bounds
+            FloatRect blockBounds = blockSprite[i].getGlobalBounds();
+			// check if ball intersects block
+            bool ballHitBlock = ballCollisionBox.intersects(blockBounds);
+
+			// if collision move block out of screen
+            if (ballHitBlock)
             {
                 blockSprite[i].setPosition(OFFSCREEN_POS_X, OFFSCREEN_POS_Y);
+				// reverse ball y velocity
                 ballVelocityY = -ballVelocityY;
             }
         }
@@ -117,12 +140,19 @@ int arkanoid()
             paddleSprite.move(-6, 0);
         }
 
-		// ball collision with paddle
-        if (FloatRect(ballPositionX, ballPositionY, BALL_SIZE, BALL_SIZE).intersects(paddleSprite.getGlobalBounds()))
+		// ball collision box
+        FloatRect ballBounds(ballPositionX, ballPositionY, BALL_SIZE, BALL_SIZE);
+		// paddle bounds
+        FloatRect paddleBounds = paddleSprite.getGlobalBounds();
+		// check if ball intersects paddle
+        bool ballHitPaddle = ballBounds.intersects(paddleBounds);
+
+		// if collision, reverse ball y velocity
+        if (ballHitPaddle)
         {
             ballVelocityY = -(rand() % 5 + 2);
         }
-
+       
 		// update ball sprite position
         ballSprite.setPosition(ballPositionX, ballPositionY);
 
