@@ -35,17 +35,20 @@ int arkanoid()
     RenderWindow window(VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Arkanoid!");
     window.setFramerateLimit(60);
 
+	// set up textures
 	Texture blockTexture, backgroundTexture, ballTexture, paddleTexture;
     blockTexture.loadFromFile("images/arkanoid/block01.png");
     backgroundTexture.loadFromFile("images/arkanoid/background.jpg");
     ballTexture.loadFromFile("images/arkanoid/ball.png");
     paddleTexture.loadFromFile("images/arkanoid/paddle.png");
 
+	// set up sprites
     Sprite backgroundSprite(backgroundTexture), ballSprite(ballTexture), paddleSprite(paddleTexture);
     paddleSprite.setPosition(PADDLE_START_POSITION_X,PADDLE_START_POSITION_Y);
 
     Sprite blockSprite[MAX_BLOCKS];
 
+	// create block grid
     int blockCount = 0;
     for (int row = 1; row <= BLOCK_ROWS; row++)
     {
@@ -57,10 +60,11 @@ int arkanoid()
         }
     }
     
-
+	// ball variables
     float ballVelocityX = 6, ballVelocityY = 5;
     float ballPositionX = BALL_POSITION_X, ballPositionY = BALL_POSITION_Y;
 
+	// game loop
     while (window.isOpen())
     {
        Event event;
@@ -70,6 +74,7 @@ int arkanoid()
              window.close();
        }
 
+	   // update ball position
         ballPositionX += ballVelocityX;
         for (int i = 0; i < blockCount; i++)
         {
@@ -80,7 +85,7 @@ int arkanoid()
             }
         }
         
-
+		// update ball position
         ballPositionY += ballVelocityY;
         for (int i = 0; i < blockCount; i++)
         {
@@ -92,7 +97,7 @@ int arkanoid()
             }
         }
        
-
+		// boundary cheking 
         if (ballPositionX < 0 || ballPositionX > WINDOW_WIDTH)
         {
             ballVelocityX = -ballVelocityX;
@@ -102,6 +107,7 @@ int arkanoid()
             ballVelocityY = -ballVelocityY;
         }
 
+		// paddle movement
         if (Keyboard::isKeyPressed(Keyboard::Right))
         {
             paddleSprite.move(6, 0);
@@ -111,23 +117,28 @@ int arkanoid()
             paddleSprite.move(-6, 0);
         }
 
+		// ball collision with paddle
         if (FloatRect(ballPositionX, ballPositionY, BALL_SIZE, BALL_SIZE).intersects(paddleSprite.getGlobalBounds()))
         {
             ballVelocityY = -(rand() % 5 + 2);
         }
 
+		// update ball sprite position
         ballSprite.setPosition(ballPositionX, ballPositionY);
 
+        // render
+		// draw background, ball and  paddle
         window.clear();
         window.draw(backgroundSprite);
         window.draw(ballSprite);
         window.draw(paddleSprite);
 
+		// draw blocks
         for (int i = 0; i < blockCount; i++)
         {
             window.draw(blockSprite[i]);
         }
-
+       
         window.display();
     }
 
